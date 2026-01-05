@@ -1,36 +1,48 @@
-# Node.js dependencies
-/node_modules
-
-# Build files
-/build
-/dist
-
-# Environment variables
+############################
+# GLOBAL
+############################
+node_modules/
+logs/
+.cache/
 .env
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Logs
-/logs
+############################
+# FRONTEND (React / Vite)
+############################
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.*
 
-# Cache
-/.cache
+############################
+# BACKEND (Node / Python / FastAPI)
+############################
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/.env.*
+backend/__pycache__/
+backend/logs/
 
-# Dependency lock files
-/yarn.lock
-/package-lock.json
+############################
+# OS FILES
+############################
+.DS_Store
+Thumbs.db
 
-# Editor files
-.vscode
-.idea
+############################
+# EDITOR / IDE
+############################
+.vscode/
+.idea/
+.eslintcache
 
-# Strapi specific files
-/api/*/node_modules
-/api/*/build
-/api/*/dist
-/api/*/logs
-/api/*/yarn.lock
-/api/*/package-lock.json
-/api/*/.env
-
-# React specific files
-/public/build
-/public/.env
+############################
+# MISC
+############################
+envTest.txt

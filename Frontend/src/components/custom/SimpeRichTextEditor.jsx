@@ -12,20 +12,22 @@ import {
   Separator,
   Toolbar,
 } from "react-simple-wysiwyg";
-import { AIChatSession } from "@/Services/AiModel";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Sparkles, LoaderCircle } from "lucide-react";
+import { generateSummaryFromAI } from "@/Services/AiModel";
 
-const PROMPT = `Create a JSON object with the following fields:
-"projectName": A string representing the project
-"techStack":A string representing the project tech stack
-"projectSummary": An array of strings, each representing a bullet point in html format describing relevant experience for the given project tittle and tech stack
-projectName-"{projectName}"
-techStack-"{techStack}"`;
+const PROJECT_PROMPT = `
+Project Name: "{projectName}"
+Tech Stack: "{techStack}"
+
+Write a concise professional project summary (3–4 lines) suitable for a resume.
+Return ONLY plain text. Do not return JSON.
+`;
+
 function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
   const [value, setValue] = useState(
-    resumeInfo?.projects[index]?.projectSummary || ""
+    resumeInfo?.projects?.[index]?.projectSummary || ""
   );
   const [loading, setLoading] = useState(false);
 
@@ -34,31 +36,53 @@ function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
   }, [value]);
 
   const GenerateSummaryFromAI = async () => {
-    if (
-      !resumeInfo?.projects[index]?.projectName ||
-      !resumeInfo?.projects[index]?.techStack
-    ) {
-      toast("Add Project Name and Tech Stack to generate summary");
+    const project = resumeInfo?.projects?.[index];
+
+    if (!project?.projectName || !project?.techStack) {
+      toast("Please add Project Name and Tech Stack first");
       return;
     }
+
     setLoading(true);
 
-    const prompt = PROMPT.replace(
-      "{projectName}",
-      resumeInfo?.projects[index]?.projectName
-    ).replace("{techStack}", resumeInfo?.projects[index]?.techStack);
-    console.log("Prompt", prompt);
-    const result = await AIChatSession.sendMessage(prompt);
-    const resp = JSON.parse(result.response.text());
-    console.log("Response", resp);
-    await setValue(resp.projectSummary?.join(""));
-    setLoading(false);
+    const prompt = PROJECT_PROMPT
+      .replace("{projectName}", project.projectName)
+      .replace("{techStack}", project.techStack);
+
+    try {
+      const result = await generateSummaryFromAI(prompt);
+
+      // 🛡️ SAFETY: handle any possible response shape
+      let finalText = "";
+
+      if (typeof result === "string") {
+        finalText = result;
+      } else if (Array.isArray(result)) {
+        finalText = result.join("\n");
+      } else if (typeof result === "object" && result !== null) {
+        finalText =
+          result.projectSummary ||
+          result.summary ||
+          JSON.stringify(result);
+      } else {
+        finalText = String(result);
+      }
+
+      setValue(finalText);
+      onRichTextEditorChange(finalText);
+      toast("Project summary generated");
+    } catch (error) {
+      console.error("Project AI error:", error);
+      toast("AI generation failed for project");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div>
       <div className="flex justify-between my-2">
-        <label className="text-xs">Summery</label>
+        <label className="text-xs">Summary</label>
         <Button
           variant="outline"
           size="sm"
@@ -67,7 +91,7 @@ function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
           className="flex gap-2 border-primary text-primary"
         >
           {loading ? (
-            <LoaderCircle className="animate-spin" />
+            <LoaderCircle className="h-4 w-4 animate-spin" />
           ) : (
             <>
               <Sparkles className="h-4 w-4" /> Generate from AI
@@ -75,12 +99,13 @@ function SimpeRichTextEditor({ index, onRichTextEditorChange, resumeInfo }) {
           )}
         </Button>
       </div>
+
       <EditorProvider>
         <Editor
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
-            onRichTextEditorChange(value);
+            onRichTextEditorChange(e.target.value);
           }}
         >
           <Toolbar>

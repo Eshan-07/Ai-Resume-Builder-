@@ -12,14 +12,6 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
   const { resume_id } = useParams();
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    firstName: resumeInfo?.firstName || "",
-    lastName: resumeInfo?.lastName || "",
-    jobTitle: resumeInfo?.jobTitle || "",
-    address: resumeInfo?.address || "",
-    phone: resumeInfo?.phone || "",
-    email: resumeInfo?.email || "",
-  });
 
   const handleInputChange = (e) => {
     enanbledNext(false);
@@ -29,16 +21,12 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
         [e.target.name]: e.target.value,
       })
     );
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
   const onSave = async (e) => {
-    setLoading(true);
     e.preventDefault();
-    console.log("Personal Details Save Started");
+    setLoading(true);
+
     const data = {
       data: {
         firstName: e.target.firstName.value,
@@ -49,13 +37,13 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
         email: e.target.email.value,
       },
     };
+
     if (resume_id) {
       try {
-        const response = await updateThisResume(resume_id, data);
-        toast("Resume Updated", "success");
+        await updateThisResume(resume_id, data);
+        toast.success("Resume updated successfully");
       } catch (error) {
-        toast(error.message, `failed`);
-        console.log(error.message);
+        toast.error(error.message || "Failed to update resume");
       } finally {
         enanbledNext(true);
         setLoading(false);
@@ -64,69 +52,114 @@ function PersonalDetails({ resumeInfo, enanbledNext }) {
   };
 
   return (
-    <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
-      <h2 className="font-bold text-lg">Personal Detail</h2>
-      <p>Get Started with the basic information</p>
+    <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mt-10">
 
-      <form onSubmit={onSave}>
-        <div className="grid grid-cols-2 mt-5 gap-3">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="h-1 w-14 rounded-full bg-emerald-500 mb-4" />
+        <h2 className="text-2xl font-bold text-slate-900">
+          Personal Details
+        </h2>
+        <p className="text-slate-500 mt-1">
+          Get started with the basic information to introduce yourself.
+        </p>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={onSave} className="space-y-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="text-sm">First Name</label>
+            <label className="text-xs font-semibold text-slate-600 uppercase">
+              First Name
+            </label>
             <Input
               name="firstName"
               defaultValue={resumeInfo?.firstName}
               required
               onChange={handleInputChange}
+              className="mt-2"
             />
           </div>
+
           <div>
-            <label className="text-sm">Last Name</label>
+            <label className="text-xs font-semibold text-slate-600 uppercase">
+              Last Name
+            </label>
             <Input
               name="lastName"
+              defaultValue={resumeInfo?.lastName}
               required
               onChange={handleInputChange}
-              defaultValue={resumeInfo?.lastName}
+              className="mt-2"
             />
           </div>
-          <div className="col-span-2">
-            <label className="text-sm">Job Title</label>
+
+          <div className="md:col-span-2">
+            <label className="text-xs font-semibold text-slate-600 uppercase">
+              Job Title
+            </label>
             <Input
               name="jobTitle"
               defaultValue={resumeInfo?.jobTitle}
               onChange={handleInputChange}
+              className="mt-2"
+              placeholder="e.g. Frontend Developer"
             />
           </div>
-          <div className="col-span-2">
-            <label className="text-sm">Address</label>
+
+          <div className="md:col-span-2">
+            <label className="text-xs font-semibold text-slate-600 uppercase">
+              Address
+            </label>
             <Input
               name="address"
-              required
               defaultValue={resumeInfo?.address}
+              required
               onChange={handleInputChange}
+              className="mt-2"
             />
           </div>
+
           <div>
-            <label className="text-sm">Phone</label>
+            <label className="text-xs font-semibold text-slate-600 uppercase">
+              Phone
+            </label>
             <Input
               name="phone"
-              required
               defaultValue={resumeInfo?.phone}
+              required
               onChange={handleInputChange}
+              className="mt-2"
             />
           </div>
+
           <div>
-            <label className="text-sm">Email</label>
+            <label className="text-xs font-semibold text-slate-600 uppercase">
+              Email
+            </label>
             <Input
               name="email"
-              required
               defaultValue={resumeInfo?.email}
+              required
               onChange={handleInputChange}
+              className="mt-2"
             />
           </div>
         </div>
-        <div className="mt-3 flex justify-end">
-          <Button type="submit" disabled={loading}>
-            {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
+
+        {/* Action */}
+        <div className="flex justify-end pt-4 border-t border-slate-100">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="px-6 bg-emerald-500 hover:bg-emerald-600"
+          >
+            {loading ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Save & Continue"
+            )}
           </Button>
         </div>
       </form>

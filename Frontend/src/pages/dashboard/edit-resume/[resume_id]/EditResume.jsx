@@ -9,15 +9,20 @@ import { addResumeData } from "@/features/resume/resumeFeatures";
 export function EditResume() {
   const { resume_id } = useParams();
   const dispatch = useDispatch();
+
   useEffect(() => {
     getResumeData(resume_id).then((data) => {
       dispatch(addResumeData(data.data));
     });
-  }, [resume_id]);
+  }, [resume_id, dispatch]);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 p-10 gap-10">
-      <ResumeForm />
-      <PreviewPage />
+    // ✅ ONLY spacing fix — no UI override
+    <div className="pt-[96px] min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-2 p-10 gap-10">
+        <ResumeForm />
+        <PreviewPage />
+      </div>
     </div>
   );
 }

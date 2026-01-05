@@ -1,8 +1,7 @@
 import Header from "@/components/custom/Header";
 import React, { useEffect } from "react";
-import heroSnapshot from "@/assets/heroSnapshot.png";
 import { useNavigate } from "react-router-dom";
-import { FaGithub, FaCircle, FaInfoCircle } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { startUser } from "../../Services/login.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +11,8 @@ function HomePage() {
   const user = useSelector((state) => state.editUser.userData);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const handleClick = () => {
+
+  const handleGitHub = () => {
     window.open(
       "https://github.com/sahidrajaansari/Ai-Resume-Builder",
       "_blank"
@@ -20,123 +20,102 @@ function HomePage() {
   };
 
   useEffect(() => {
-    const fetchResponse = async () => {
+    const fetchUser = async () => {
       try {
-        const response = await startUser();
-        if (response.statusCode == 200) {
-          dispatch(addUserData(response.data));
-        } else {
-          dispatch(addUserData(""));
-        }
-      } catch (error) {
-        console.log(
-          "Printing from Home Page there was a error ->",
-          error.message
-        );
+        const res = await startUser();
+        if (res?.statusCode === 200) dispatch(addUserData(res.data));
+        else dispatch(addUserData(""));
+      } catch {
         dispatch(addUserData(""));
       }
     };
-    fetchResponse();
+    fetchUser();
   }, []);
 
-  const hadnleGetStartedClick = () => {
-    if (user) {
-      console.log("Printing from Homepage User is There ");
-      navigate("/dashboard");
-    } else {
-      console.log("Printing for Homepage User Not Found");
-      navigate("/auth/sign-in");
-    }
+  const handleGetStarted = () => {
+    if (user) navigate("/dashboard");
+    else navigate("/auth/sign-in");
   };
+
   return (
     <>
       <Header user={user} />
-      <section className="pt-24 pb-20 bg-white">
-        <div className="px-12 mx-auto max-w-7xl">
-          <div className="w-full mx-auto text-left md:w-11/12 xl:w-9/12 md:text-center">
-            <h1 className="mb-8 text-4xl font-extrabold leading-none tracking-normal text-gray-900 md:text-6xl md:tracking-tight">
-              <span>Start</span>{" "}
-              <span className="block w-full py-2 text-transparent bg-clip-text leading-12 bg-gradient-to-r from-green-400 to-purple-500 lg:inline">
-                building a Resume
-              </span>{" "}
-              <span>for your next Job</span>
-            </h1>
-            <p className="px-0 mb-8 text-lg text-gray-600 md:text-xl lg:px-24">
-              Build. Refine. Shine. With AI-Driven Resumes
-            </p>
-            <div className="mb-4 space-x-0 md:space-x-2 md:mb-8">
-              <a
-                className="inline-flex items-center justify-center w-full px-6 py-3 mb-2 text-lg text-white bg-green-400 rounded-2xl sm:w-auto sm:mb-0 hover:cursor-pointer"
-                onClick={hadnleGetStartedClick}
-              >
-                Get Started
-                <svg
-                  className="w-4 h-4 ml-1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-              </a>
-              <a
-                onClick={handleClick}
-                className="inline-flex items-center justify-center w-full px-6 py-3 mb-2 text-lg bg-gray-100 rounded-2xl sm:w-auto sm:mb-0 cursor-pointer"
-              >
-                Learn More
-                <svg
-                  className="w-4 h-4 ml-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                  ></path>
-                </svg>
-              </a>
+
+      {/* ================= HERO ================= */}
+      <section className="relative min-h-screen w-full overflow-hidden bg-[#05070f] text-white">
+        {/* Background grid */}
+        <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:32px_32px]" />
+
+        {/* Ambient Blobs */}
+        <div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-green-400/30 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-0 -right-32 w-[420px] h-[420px] bg-purple-500/30 rounded-full blur-[120px] animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-cyan-400/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+
+        {/* Content */}
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
+          {/* Glass Card */}
+          <div className="relative max-w-5xl w-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl px-10 py-16 shadow-[0_0_80px_rgba(0,0,0,0.7)]">
+
+            {/* Glow Border */}
+            <div className="absolute -inset-px rounded-3xl bg-gradient-to-r from-green-400/40 via-purple-500/40 to-cyan-400/40 blur-xl opacity-60 pointer-events-none" />
+
+            {/* Badge */}
+            <div className="relative z-10 inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-white/5 border border-white/10 text-xs tracking-wide text-cyan-300">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+              AI-Powered Resume Builder
             </div>
-          </div>
-          <div className="w-full mx-auto mt-20 text-center md:w-10/12">
-            <div className="relative z-0 w-full mt-8">
-              <div className="relative overflow-hidden shadow-2xl">
-                <div className="flex items-center justify-between px-4 bg-gradient-to-r from-green-400 to-purple-500 h-11 rounded-t-xl">
-                  <div className="flex space-x-1.5">
-                    <FaCircle className="w-3 h-3 text-white hover:text-gray-300 transition duration-300 transform hover:scale-125" />
-                    <FaCircle className="w-3 h-3 text-white hover:text-gray-300 transition duration-300 transform hover:scale-125" />
-                    <FaCircle className="w-3 h-3 text-white hover:text-gray-300 transition duration-300 transform hover:scale-125" />
-                  </div>
-                  <FaInfoCircle className="text-white hover:text-gray-300 transition duration-300 transform hover:rotate-45" />
-                </div>
-                <img
-                  className="object-cover py-2 px-4 rounded-b-lg transition duration-300 transform hover:scale-105"
-                  src={heroSnapshot}
-                  alt="Dashboard"
-                />
-              </div>
+
+            {/* Heading */}
+            <h1 className="relative z-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">
+              Build Your{" "}
+              <span className="bg-gradient-to-r from-green-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent animate-pulse">
+                Future
+              </span>
+              , Fast.
+            </h1>
+
+            {/* Subheading */}
+            <p className="relative z-10 mt-6 max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-white/70">
+              Build. Refine. Shine. Craft ATS-friendly resumes that stand out with
+              next-gen AI intelligence.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="relative z-10 mt-10 flex flex-col sm:flex-row gap-5 justify-center">
+              <Button
+                onClick={handleGetStarted}
+                className="px-10 py-6 text-lg font-semibold rounded-xl text-black bg-green-400 hover:bg-green-300 shadow-[0_0_35px_rgba(34,197,94,0.8)] transition-all hover:-translate-y-1"
+              >
+                Get Started →
+              </Button>
+
+              <button
+                onClick={handleGitHub}
+                className="px-10 py-6 text-lg rounded-xl border border-purple-500/50 text-purple-300 hover:bg-purple-500/10 shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all hover:-translate-y-1"
+              >
+                Learn More ✦
+              </button>
+            </div>
+
+            {/* Trust */}
+            <div className="relative z-10 mt-10 pt-8 border-t border-white/5 text-xs text-white/40 tracking-widest">
+              TRUSTED BY DEVELOPERS WORLDWIDE
             </div>
           </div>
         </div>
       </section>
-      <footer className="bg-white" aria-labelledby="footer-heading">
-        <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24 p-5 flex justify-between">
-          <p className="text-xs leading-5 text-gray-500">
-            &copy; 2024 Ai-Resume-Builder. All rights reserved.
-          </p>
-          <div>
-            <Button variant="secondary" onClick={handleClick}>
-              <FaGithub className="w-4 h-4 mr-1" />
-              GitHub
-            </Button>
-          </div>
+
+      {/* ================= FOOTER ================= */}
+      <footer className="bg-[#05070f] border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-white/40">
+          <span>© 2024 Ai-Resume-Builder. All rights reserved.</span>
+          <Button
+            variant="secondary"
+            onClick={handleGitHub}
+            className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white"
+          >
+            <FaGithub /> GitHub
+          </Button>
         </div>
       </footer>
     </>
