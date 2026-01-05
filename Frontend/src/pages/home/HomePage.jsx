@@ -14,7 +14,7 @@ function HomePage() {
 
   const handleGitHub = () => {
     window.open(
-      "https://github.com/sahidrajaansari/Ai-Resume-Builder",
+      "https://github.com/Eshan-07/Ai-Resume-Builder-",
       "_blank"
     );
   };
